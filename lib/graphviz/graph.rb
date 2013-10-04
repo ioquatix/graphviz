@@ -22,12 +22,12 @@ require 'stringio'
 
 module Graphviz
 	class Node
-		def initialize(graph, name, options)
+		def initialize(graph, name, attributes = {})
 			@graph = graph
 			@graph.nodes[name] = self
 			
 			@name = name
-			@options = options
+			@attributes = attributes
 			
 			@edges = []
 		end
@@ -36,6 +36,7 @@ module Graphviz
 		attr :options
 		
 		attr :edges
+		attr_accessor :attributes
 		
 		def connect(destination, options = {})
 			edge = Edge.new(@graph, self, destination, options)
@@ -43,6 +44,10 @@ module Graphviz
 			@edges << edge
 			
 			return edge
+		end
+		
+		def connected?(node)
+			return @edges.find{|edge| edge.destination == node}
 		end
 		
 		def add_node(name, options = {})
@@ -55,61 +60,124 @@ module Graphviz
 	end
 	
 	class Edge
-		def initialize(graph, source, destination, options = {})
+		def initialize(graph, source, destination, attributes = {})
 			@graph = graph
 			@graph.edges << self
 			
 			@source = source
 			@destination = destination
 			
-			@options = options
+			@attributes = attributes
 		end
 		
 		attr :source
 		attr :destination
 		
+		attr_accessor :attributes
+		
 		attr :options
+		attr_accessor :line
 		
 		def to_s
-			"->"
+			'->'
 		end
 	end
 	
+	class EdgeNode < Node
+	end
+	
 	class Graph
-		def initialize(name = 'G', options = {})
+		def initialize(name = 'G', attributes = {})
 			@name = name
 			
 			@nodes = {}
 			@edges = []
+			@graphs = {}
+			
+			@parent = nil
+			
+			@attributes = attributes
 		end
 		
 		attr :nodes
 		attr :edges
+		attr :graphs
 		
-		def add_node(name, options = {})
-			Node.new(self, name, options)
+		attr_accessor :attributes
+		
+		def add_node(name, attributes = {})
+			Node.new(self, name, attributes)
+		end
+		
+		def add_subgraph(name, attributes = {})
+			graph = Graph.new(name, attributes)
+			
+			graph.attach(self)
+			@graphs[name] = graph
+			
+			return graph
+		end
+		
+		def attach(parent)
+			@parent = parent
 		end
 		
 		def to_dot(options = {})
 			buffer = StringIO.new
 			
+			dump_graph(buffer, "", options)
+			
+			return buffer.string
+		end
+		
+		protected
+		
+		def dump_graph(buffer, indent, options)
 			format = options[:format] || 'digraph'
 			
-			buffer.puts "#{format} #{@name} {"
+			buffer.puts "#{indent}#{format} #{dump_value(@name)} {"
+			
+			@attributes.each do |(name, value)|
+				buffer.puts "#{indent}\t#{name}=#{dump_value(value)};"
+			end
 			
 			@nodes.each do |(name, node)|
+				node_attributes_text = dump_attributes(node.attributes)
+				node_name = dump_value(node.name)
+				buffer.puts "#{indent}\t#{node_name}#{node_attributes_text};"
+				
 				if node.edges.size > 0
 					node.edges.each do |edge|
-						buffer.puts "\t#{edge.source.name.dump} #{edge} #{edge.destination.name.dump};"
+						from_name = dump_value(edge.source.name)
+						to_name = dump_value(edge.destination.name)
+						edge_attributes_text = dump_attributes(edge.attributes)
+						
+						buffer.puts "#{indent}\t#{from_name} #{edge} #{to_name}#{edge_attributes_text};"
 					end
-				else
-					buffer.puts "\t#{node.name.dump};"
 				end
 			end
 			
-			buffer.puts "}"
+			@graphs.each do |(name, graph)|
+				graph.dump_graph(buffer, indent + "\t", options.merge(:format => 'subgraph'))
+			end
 			
-			return buffer.string
+			buffer.puts "#{indent}}"
+		end
+		
+		def dump_value(value)
+			if Symbol === value
+				value.to_s
+			else
+				value.inspect
+			end
+		end
+		
+		def dump_attributes(attributes)
+			if attributes.size > 0
+				"[" + attributes.collect{|(name, value)| "#{name}=#{dump_value(value)}"}.join(", ") + "]"
+			else
+				""
+			end
 		end
 	end
 end

@@ -42,15 +42,18 @@ module Graphviz
 		end
 		
 		output, input = IO.pipe
-		pid = Process.open(["dot", "-T#{output_format}"], :out => output_file, :in => output)
+		pid = Process.spawn("dot", "-T#{output_format}", :out => output_file, :in => output)
+		
+		output.close
 		
 		# Send graph data to process:
 		input.write(graph.to_dot)
+		input.close
 		
 		_, status = Process.wait2(pid)
 		
 		if status != 0
-			raise OutputError.new(task.error.read)
+			raise OutputError.new("dot exited with status #{status}")
 		end
 			
 		# Did we use a local pipe for output?

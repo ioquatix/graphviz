@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Samuel G. D. Williams. <http://www.codeotaku.com>
+# Copyright, 2012, by Samuel G. D. Williams. <http://www.codeotaku.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,44 +18,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require "graphviz/version"
-require "graphviz/graph"
+require 'graphviz'
 
-module Graphviz
-	class OutputError < StandardError
-	end
+module Graphviz::GraphSpec
+	SAMPLE_GRAPH_DOT = <<-EOF
+digraph "G" {
+	"Foo"[shape="box3d", color="red"];
+	"Foo" -> "Bar";
+	"Bar";
+}
+	EOF
 	
-	def self.output(graph, options = {})
-		text = graph.to_dot
-		
-		output_format = options[:format]
-		
-		if options[:path]
-			# Grab the output format from the file name:
-			if options[:path] =~ /\.(.*?)$/
-				output_format ||= $1
-			end
+	describe Graphviz::Graph do
+		it "should construct a simple graph" do
+			foo = subject.add_node("Foo")
+			foo.add_node("Bar")
 			
-			output_file = File.open(options[:path], "w")
-		else
-			output_file = IO.pipe
-		end
-		
-		output, input = IO.pipe
-		pid = Process.open(["dot", "-T#{output_format}"], :out => output_file, :in => output)
-		
-		# Send graph data to process:
-		input.write(graph.to_dot)
-		
-		_, status = Process.wait2(pid)
-		
-		if status != 0
-			raise OutputError.new(task.error.read)
-		end
+			foo.attributes[:shape] = 'box3d'
+			foo.attributes[:color] = 'red'
 			
-		# Did we use a local pipe for output?
-		if Array === output_file
-			return task.output.read
+			expect(subject.to_dot).to be == SAMPLE_GRAPH_DOT
+			
+			# Process the graph to output:
+			Graphviz::output(subject, :path => "test.pdf")
+			
+			expect(File.exist? "test.pdf").to be true
 		end
 	end
 end

@@ -1,15 +1,15 @@
-# Copyright (c) 2013 Samuel G. D. Williams. <http://www.codeotaku.com>
-# 
+# Copyright, 2014, by Samuel G. D. Williams. <http://www.codeotaku.com>
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +21,10 @@
 require 'stringio'
 
 module Graphviz
+	# Represents a visual node in the graph, which can be connected to other nodes.
 	class Node
+		# Initialize the node in the graph with the unique name.
+		# @param attributes [Hash] The associated graphviz attributes for this node.
 		def initialize(graph, name, attributes = {})
 			@graph = graph
 			@graph.nodes[name] = self
@@ -32,26 +35,34 @@ module Graphviz
 			@edges = []
 		end
 		
+		# @return [String] The unique name of the node.
 		attr :name
-		attr :options
 		
+		# @return [Array<Edge>] Any edges connecting to other nodes.
 		attr :edges
+		
+		# @return [Hash] Any attributes specified for this node.
 		attr_accessor :attributes
 		
-		def connect(destination, options = {})
-			edge = Edge.new(@graph, self, destination, options)
+		# Create an edge between this node and the destination with the specified options.
+		# @param attributes [Hash] The associated graphviz attributes for the edge.
+		def connect(destination, attributes = {})
+			edge = Edge.new(@graph, self, destination, attributes)
 			
 			@edges << edge
 			
 			return edge
 		end
 		
+		# Calculate if this node is connected to another. +O(N)+ search required.
 		def connected?(node)
 			return @edges.find{|edge| edge.destination == node}
 		end
 		
-		def add_node(name, options = {})
-			node = Node.new(@graph, name, options)
+		# Add a node and #connect to it.
+		# @param attributes [Hash] The associated graphviz attributes for the new node.
+		def add_node(name, attributes = {})
+			node = Node.new(@graph, name, attributes)
 			
 			connect(node)
 			
@@ -59,7 +70,10 @@ module Graphviz
 		end
 	end
 	
+	# Represents a visual edge between two nodes.
 	class Edge
+		# Initialize the edge in the given graph, with a source and destination node.
+		# @param attributes [Hash] The associated graphviz attributes for this edge.
 		def initialize(graph, source, destination, attributes = {})
 			@graph = graph
 			@graph.edges << self
@@ -70,23 +84,23 @@ module Graphviz
 			@attributes = attributes
 		end
 		
+		# @return [Node] The source node.
 		attr :source
+		
+		# @return [Node] The destination node.
 		attr :destination
 		
+		# @returns [Hash] Any attributes specified for this edge.
 		attr_accessor :attributes
-		
-		attr :options
-		attr_accessor :line
 		
 		def to_s
 			'->'
 		end
 	end
 	
-	class EdgeNode < Node
-	end
-	
+	# Contains a set of nodes, edges and subgraphs.
 	class Graph
+		# Initialize the graph with the specified unique name.
 		def initialize(name = 'G', attributes = {})
 			@name = name
 			
@@ -99,16 +113,28 @@ module Graphviz
 			@attributes = attributes
 		end
 		
+		# @returns [Graph] The parent graph, if any.
+		attr :parent
+		
+		# @returns [Array<Node>] All nodes in the graph.
 		attr :nodes
+		
+		# @returns [Array<Edge>] All edges in the graph.
 		attr :edges
+		
+		# @returns [Array<Graph>] Any subgraphs.
 		attr :graphs
 		
+		# @returns [Hash] Any associated graphviz attributes.
 		attr_accessor :attributes
 		
+		# @returns [Node] Add a node to this graph.
 		def add_node(name, attributes = {})
 			Node.new(self, name, attributes)
 		end
 		
+		# Add a subgraph with a given name and attributes.
+		# @returns [Graph] the new graph.
 		def add_subgraph(name, attributes = {})
 			graph = Graph.new(name, attributes)
 			
@@ -118,10 +144,12 @@ module Graphviz
 			return graph
 		end
 		
+		# Make this graph a subgraph of the parent.
 		def attach(parent)
 			@parent = parent
 		end
 		
+		# @returns [String] Output the graph using the dot format.
 		def to_dot(options = {})
 			buffer = StringIO.new
 			
@@ -132,6 +160,7 @@ module Graphviz
 		
 		protected
 		
+		# Dump the entire graph and all subgraphs to dot text format.
 		def dump_graph(buffer, indent, options)
 			format = options[:format] || 'digraph'
 			
@@ -164,6 +193,7 @@ module Graphviz
 			buffer.puts "#{indent}}"
 		end
 		
+		# Dump the value to dot text format.
 		def dump_value(value)
 			if Symbol === value
 				value.to_s
@@ -172,6 +202,7 @@ module Graphviz
 			end
 		end
 		
+		# Dump the attributes to dot text format.
 		def dump_attributes(attributes)
 			if attributes.size > 0
 				"[" + attributes.collect{|(name, value)| "#{name}=#{dump_value(value)}"}.join(", ") + "]"

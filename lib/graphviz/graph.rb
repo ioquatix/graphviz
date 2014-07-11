@@ -90,9 +90,10 @@ module Graphviz
 		# @return [Node] The destination node.
 		attr :destination
 		
-		# @returns [Hash] Any attributes specified for this edge.
+		# @return [Hash] Any attributes specified for this edge.
 		attr_accessor :attributes
 		
+		# @return [String] A convenient ASCII arrow.
 		def to_s
 			'->'
 		end
@@ -113,28 +114,28 @@ module Graphviz
 			@attributes = attributes
 		end
 		
-		# @returns [Graph] The parent graph, if any.
+		# @return [Graph] The parent graph, if any.
 		attr :parent
 		
-		# @returns [Array<Node>] All nodes in the graph.
+		# @return [Array<Node>] All nodes in the graph.
 		attr :nodes
 		
-		# @returns [Array<Edge>] All edges in the graph.
+		# @return [Array<Edge>] All edges in the graph.
 		attr :edges
 		
-		# @returns [Array<Graph>] Any subgraphs.
+		# @return [Array<Graph>] Any subgraphs.
 		attr :graphs
 		
-		# @returns [Hash] Any associated graphviz attributes.
+		# @return [Hash] Any associated graphviz attributes.
 		attr_accessor :attributes
 		
-		# @returns [Node] Add a node to this graph.
+		# @return [Node] Add a node to this graph.
 		def add_node(name, attributes = {})
 			Node.new(self, name, attributes)
 		end
 		
 		# Add a subgraph with a given name and attributes.
-		# @returns [Graph] the new graph.
+		# @return [Graph] the new graph.
 		def add_subgraph(name, attributes = {})
 			graph = Graph.new(name, attributes)
 			
@@ -149,7 +150,7 @@ module Graphviz
 			@parent = parent
 		end
 		
-		# @returns [String] Output the graph using the dot format.
+		# @return [String] Output the graph using the dot format.
 		def to_dot(options = {})
 			buffer = StringIO.new
 			

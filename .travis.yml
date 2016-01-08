@@ -1,5 +1,8 @@
 language: ruby
-sudo: false
+sudo: required
+before_install:
+  # We need GraphViz for testing:
+  - sudo apt-get install graphviz
 rvm:
   - 2.0.0
   - 2.1.8

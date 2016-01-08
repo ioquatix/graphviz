@@ -1,10 +1,14 @@
 language: ruby
-before_install:
-  - sudo apt-get install graphviz
+sudo: false
 rvm:
-  - "1.9"
-  - "2.0"
-  - "2.1"
+  - 2.0.0
+  - 2.1.8
+  - 2.2.4
+  - 2.3.0
+  - ruby-head
+  - rbx-2
+env: COVERAGE=true
 matrix:
   allow_failures:
-    - rvm: "1.9"
+    - rvm: "rbx-2"
+

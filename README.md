@@ -9,15 +9,15 @@ Graphviz is a graph visualisation system. This gem is a lightweight interface fo
 
 Add this line to your application's Gemfile:
 
-    gem 'graphviz'
+	gem 'graphviz'
 
 And then execute:
 
-    $ bundle
+	$ bundle
 
 Or install it yourself as:
 
-    $ gem install graphviz
+	$ gem install graphviz
 
 ## Usage
 

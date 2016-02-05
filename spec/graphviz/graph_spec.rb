@@ -24,8 +24,8 @@ module Graphviz::GraphSpec
 	SAMPLE_GRAPH_DOT = <<-EOF
 digraph "G" {
 	"Foo"[shape="box3d", color="red"];
-	"Foo" -> "Bar";
 	"Bar";
+	"Foo" -> "Bar";
 }
 	EOF
 	

@@ -25,21 +25,25 @@ module Graphviz
 	class Node
 		# Initialize the node in the graph with the unique name.
 		# @param attributes [Hash] The associated graphviz attributes for this node.
-		def initialize(graph, name, attributes = {})
-			@graph = graph
-			@graph.nodes[name] = self
-			
+		def initialize(name, graph = nil, **attributes)
 			@name = name
 			@attributes = attributes
 			
-			@edges = []
+			@connections = []
+			
+			graph << self if graph
+		end
+		
+		# Attach this node to the given graph:
+		def attach(parent)
+			@graph = parent
 		end
 		
 		# @return [String] The unique name of the node.
 		attr :name
 		
 		# @return [Array<Edge>] Any edges connecting to other nodes.
-		attr :edges
+		attr :connections
 		
 		# @return [Hash] Any attributes specified for this node.
 		attr_accessor :attributes
@@ -49,24 +53,53 @@ module Graphviz
 		def connect(destination, attributes = {})
 			edge = Edge.new(@graph, self, destination, attributes)
 			
-			@edges << edge
+			@connections << edge
 			
 			return edge
 		end
 		
 		# Calculate if this node is connected to another. +O(N)+ search required.
 		def connected?(node)
-			return @edges.find{|edge| edge.destination == node}
+			return @connections.find{|edge| edge.destination == node}
 		end
 		
 		# Add a node and #connect to it.
 		# @param attributes [Hash] The associated graphviz attributes for the new node.
-		def add_node(name, attributes = {})
-			node = Node.new(@graph, name, attributes)
+		def add_node(name = nil, **attributes)
+			node = @graph.add_node(name, **attributes)
 			
 			connect(node)
 			
 			return node
+		end
+		
+		def identifier
+			@name
+		end
+		
+		def dump_graph(buffer, indent, options)
+			node_attributes_text = dump_attributes(@attributes)
+			node_name = dump_value(self.identifier)
+			
+			buffer.puts "#{indent}#{node_name}#{node_attributes_text};"
+		end
+		
+		# Dump the value to dot text format.
+		def dump_value(value)
+			if Symbol === value
+				value.to_s
+			else
+				value.inspect
+			end
+		end
+		
+		# Dump the attributes to dot text format.
+		def dump_attributes(attributes)
+			if attributes.size > 0
+				"[" + attributes.collect{|(name, value)| "#{name}=#{dump_value(value)}"}.join(", ") + "]"
+			else
+				""
+			end
 		end
 	end
 	
@@ -100,28 +133,20 @@ module Graphviz
 	end
 	
 	# Contains a set of nodes, edges and subgraphs.
-	class Graph
+	class Graph < Node
 		# Initialize the graph with the specified unique name.
-		def initialize(name = 'G', attributes = {})
-			@name = name
+		def initialize(name = 'G', parent = nil, **attributes)
+			super
 			
-			@nodes = {}
 			@edges = []
-			@graphs = {}
-			
-			@parent = nil
-			
-			@attributes = attributes
+			@nodes = {}
 		end
 		
-		# @return [Graph] The parent graph, if any.
-		attr :parent
+		# All edges in the graph
+		attr :edges
 		
 		# @return [Array<Node>] All nodes in the graph.
 		attr :nodes
-		
-		# @return [Array<Edge>] All edges in the graph.
-		attr :edges
 		
 		# @return [Array<Graph>] Any subgraphs.
 		attr :graphs
@@ -130,24 +155,28 @@ module Graphviz
 		attr_accessor :attributes
 		
 		# @return [Node] Add a node to this graph.
-		def add_node(name, attributes = {})
-			Node.new(self, name, attributes)
+		def add_node(name = nil, **attributes)
+			name ||= "#{@name}N#{@nodes.count}"
+			
+			Node.new(name, self, attributes)
 		end
 		
 		# Add a subgraph with a given name and attributes.
 		# @return [Graph] the new graph.
-		def add_subgraph(name, attributes = {})
-			graph = Graph.new(name, attributes)
+		def add_subgraph(name = nil, **attributes)
+			name ||= "#{@name}S#{@nodes.count}"
 			
-			graph.attach(self)
-			@graphs[name] = graph
+			subgraph = Graph.new(name, self, attributes)
 			
-			return graph
+			self << subgraph
+			
+			return subgraph
 		end
 		
-		# Make this graph a subgraph of the parent.
-		def attach(parent)
-			@parent = parent
+		def << node
+			@nodes[node.name] = node
+			
+			node.attach(self)
 		end
 		
 		# @return [String] Output the graph using the dot format.
@@ -159,57 +188,49 @@ module Graphviz
 			return buffer.string
 		end
 		
-		protected
+		def graph_format(options)
+			if @graph
+				'subgraph'
+			else
+				options[:format] || 'digraph'
+			end
+		end
+		
+		def identifier
+			if @attributes[:cluster]
+				"cluster_#{@name}"
+			else
+				super
+			end
+		end
+		
+		def dump_edges(buffer, indent, options)
+			@edges.each do |edge|
+				from_name = dump_value(edge.source.identifier)
+				to_name = dump_value(edge.destination.identifier)
+				edge_attributes_text = dump_attributes(edge.attributes)
+				
+				buffer.puts "#{indent}#{from_name} #{edge} #{to_name}#{edge_attributes_text};"
+			end
+		end
 		
 		# Dump the entire graph and all subgraphs to dot text format.
 		def dump_graph(buffer, indent, options)
-			format = options[:format] || 'digraph'
+			format = graph_format(options)
 			
-			buffer.puts "#{indent}#{format} #{dump_value(@name)} {"
+			buffer.puts "#{indent}#{format} #{dump_value(self.identifier)} {"
 			
 			@attributes.each do |(name, value)|
 				buffer.puts "#{indent}\t#{name}=#{dump_value(value)};"
 			end
 			
 			@nodes.each do |(name, node)|
-				node_attributes_text = dump_attributes(node.attributes)
-				node_name = dump_value(node.name)
-				buffer.puts "#{indent}\t#{node_name}#{node_attributes_text};"
-				
-				if node.edges.size > 0
-					node.edges.each do |edge|
-						from_name = dump_value(edge.source.name)
-						to_name = dump_value(edge.destination.name)
-						edge_attributes_text = dump_attributes(edge.attributes)
-						
-						buffer.puts "#{indent}\t#{from_name} #{edge} #{to_name}#{edge_attributes_text};"
-					end
-				end
+				node.dump_graph(buffer, indent + "\t", options)
 			end
 			
-			@graphs.each do |(name, graph)|
-				graph.dump_graph(buffer, indent + "\t", options.merge(:format => 'subgraph'))
-			end
+			dump_edges(buffer, indent + "\t", options)
 			
 			buffer.puts "#{indent}}"
-		end
-		
-		# Dump the value to dot text format.
-		def dump_value(value)
-			if Symbol === value
-				value.to_s
-			else
-				value.inspect
-			end
-		end
-		
-		# Dump the attributes to dot text format.
-		def dump_attributes(attributes)
-			if attributes.size > 0
-				"[" + attributes.collect{|(name, value)| "#{name}=#{dump_value(value)}"}.join(", ") + "]"
-			else
-				""
-			end
 		end
 	end
 end

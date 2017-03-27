@@ -1,17 +1,15 @@
 language: ruby
-sudo: required
-before_install:
-  # We need GraphViz for testing:
-  - sudo apt-get install graphviz
-rvm:
-  - 2.0.0
-  - 2.1.8
-  - 2.2.4
-  - 2.3.0
-  - ruby-head
-  - rbx-2
-env: COVERAGE=true
-matrix:
-  allow_failures:
-    - rvm: "rbx-2"
+sudo: false
+dist: trusty
 
+addons:
+  apt:
+    packages:
+      - graphviz
+
+rvm:
+  - 2.1
+  - 2.2
+  - 2.3
+  - 2.4
+  - ruby-head

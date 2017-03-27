@@ -18,8 +18,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require "graphviz/version"
-require "graphviz/graph"
+require_relative "graphviz/version"
+require_relative "graphviz/graph"
 
 module Graphviz
 	# Signals that the process exited with a non-zero status.

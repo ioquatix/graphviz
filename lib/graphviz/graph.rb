@@ -31,6 +31,8 @@ module Graphviz
 			
 			@connections = []
 			
+			# This sets up the connection between the node and the parent.
+			@graph = nil
 			graph << self if graph
 		end
 		

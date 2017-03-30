@@ -21,30 +21,26 @@
 require 'graphviz'
 
 module Graphviz::GraphSpec
-	SAMPLE_GRAPH_DOT = <<-EOF
-digraph "G" {
-	"Foo"[shape="box3d", color="red"];
-	"Bar";
-	"Foo" -> "Bar";
-}
-	EOF
-	
 	describe Graphviz::Graph do
-    before do
-      @g = Graphviz::Graph.new
-    end
-		it "should construct a simple graph" do
-			foo = @g.add_node("Foo")
-			foo.add_node("Bar")
-			
-			foo.attributes[:shape] = 'box3d'
-			foo.attributes[:color] = 'red'
-			
-			expect(@g.to_dot).to be == SAMPLE_GRAPH_DOT
-			
-			# Process the graph to output:
-			Graphviz::output(@g, :path => "test.pdf")
-			
+		before do
+			@hello = Graphviz::Graph.new("Hello")
+			@keywords = []
+			@keywords[0] = @hello.add_node("Hello")
+			@keywords[1] = @hello.add_node("People")
+			@keywords[0].connect(@keywords[1])
+		end
+		it 'assigns a title' do
+			expect(@hello.identifier).to be == "Hello"
+		end		
+		it 'has two nodes : Hello & People' do
+			expect(@hello.nodes.keys).to be == ["Hello", "People"]			
+		end
+		it 'has Hello (source) linked to People (destination)' do
+			expect(@hello.edges[0].source.name).to be == "Hello"
+			expect(@hello.edges[0].destination.name).to be == "People"
+		end
+		it 'can generate the graph in pdf format' do
+			Graphviz::output(@hello, :path => "test.pdf")
 			expect(File.exist? "test.pdf").to be true
 		end
 	end

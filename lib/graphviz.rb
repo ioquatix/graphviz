@@ -54,7 +54,7 @@ module Graphviz
 		output.close
 		
 		# Send graph data to process:
-		input.write(graph.to_dot)
+		input.write(text)
 		input.close
 		
 		_, status = Process.wait2(pid)

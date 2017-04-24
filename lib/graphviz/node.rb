@@ -102,7 +102,7 @@ module Graphviz
 		# Dump the attributes to dot text format.
 		def dump_attributes(attributes)
 			if attributes.size > 0
-				"[" + attributes.collect{|(name, value)| "#{name}=#{dump_value(value)}"}.join(", ") + "]"
+				"[" + attributes.collect{|name, value| "#{name}=#{dump_value(value)}"}.join(", ") + "]"
 			else
 				""
 			end

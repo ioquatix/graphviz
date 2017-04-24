@@ -39,9 +39,6 @@ module Graphviz
 		# @return [Array<Node>] All nodes in the graph.
 		attr :nodes
 		
-		# @return [Array<Graph>] Any subgraphs.
-		attr :graphs
-		
 		# @return [Hash] Any associated graphviz attributes.
 		attr_accessor :attributes
 		
@@ -109,11 +106,11 @@ module Graphviz
 			
 			buffer.puts "#{indent}#{format} #{dump_value(self.identifier)} {"
 			
-			@attributes.each do |(name, value)|
+			@attributes.each do |name, value|
 				buffer.puts "#{indent}\t#{name}=#{dump_value(value)};"
 			end
 			
-			@nodes.each do |(name, node)|
+			@nodes.each do |name, node|
 				node.dump_graph(buffer, indent + "\t", options)
 			end
 			

@@ -30,17 +30,20 @@ digraph "G" {
 	EOF
 	
 	describe Graphviz::Graph do
+    before do
+      @g = Graphviz::Graph.new
+    end
 		it "should construct a simple graph" do
-			foo = subject.add_node("Foo")
+			foo = @g.add_node("Foo")
 			foo.add_node("Bar")
 			
 			foo.attributes[:shape] = 'box3d'
 			foo.attributes[:color] = 'red'
 			
-			expect(subject.to_dot).to be == SAMPLE_GRAPH_DOT
+			expect(@g.to_dot).to be == SAMPLE_GRAPH_DOT
 			
 			# Process the graph to output:
-			Graphviz::output(subject, :path => "test.pdf")
+			Graphviz::output(@g, :path => "test.pdf")
 			
 			expect(File.exist? "test.pdf").to be true
 		end

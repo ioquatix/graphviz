@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 		Graphviz is a graph visualisation system. This gem is a lightweight interface for generating graphs with Graphviz.
 	EOF
 	spec.summary       = "A lightweight interface for generating graphs with Graphviz."
-	spec.homepage      = ""
+	spec.homepage      = "https://github.com/ioquatix/graphviz"
 	spec.license       = "MIT"
 
 	spec.files         = `git ls-files`.split($/)

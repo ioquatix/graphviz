@@ -22,6 +22,8 @@ Gem::Specification.new do |spec|
 
 	spec.has_rdoc = 'yard'
 
+	spec.add_runtime_dependency 'tty-which', '~> 0.3.0'
+
 	spec.add_development_dependency "yard"
 	spec.add_development_dependency "bundler", "~> 1.3"
 	spec.add_development_dependency "rspec", "~> 3.4.0"

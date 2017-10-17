@@ -20,6 +20,7 @@
 
 require_relative "graphviz/version"
 require_relative "graphviz/graph"
+require 'tty-which'
 
 module Graphviz
 	# Signals that the process exited with a non-zero status.
@@ -47,9 +48,15 @@ module Graphviz
 		else
 			output_file = IO.pipe
 		end
-		
-		output, input = IO.pipe
-		pid = Process.spawn(options[:dot] || "dot", "-T#{output_format}", :out => output_file, :in => output)
+
+		dot_executable = options[:dot] || "dot"
+
+		unless TTY::Which.which(dot_executable)
+			raise OutputError, "#{dot_executable} must be installed to output graphs."
+		end
+
+                output, input = IO.pipe
+		pid = Process.spawn(dot_executable, "-T#{output_format}", :out => output_file, :in => output)
 		
 		output.close
 		

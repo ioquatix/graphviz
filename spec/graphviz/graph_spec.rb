@@ -44,5 +44,10 @@ digraph "G" {
 			
 			expect(File.exist? "test.pdf").to be true
 		end
+
+		it 'should raise an OutputError unless the dot executable is installed' do
+			expect { Graphviz.output(subject, :dot => 'foobarbaz') }
+				.to raise_error(Graphviz::OutputError, 'foobarbaz must be installed to output graphs.')
+		end
 	end
 end

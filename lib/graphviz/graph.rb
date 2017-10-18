@@ -68,10 +68,10 @@ module Graphviz
 		end
 		
 		# @return [String] Output the graph using the dot format.
-		def to_dot(options = {})
+		def to_dot(**options)
 			buffer = StringIO.new
 			
-			dump_graph(buffer, "", options)
+			dump_graph(buffer, **options)
 			
 			return buffer.string
 		end
@@ -92,7 +92,7 @@ module Graphviz
 			end
 		end
 		
-		def dump_edges(buffer, indent, options)
+		def dump_edges(buffer, indent, **options)
 			@edges.each do |edge|
 				edge_attributes_text = dump_attributes(edge.attributes)
 				
@@ -101,7 +101,7 @@ module Graphviz
 		end
 		
 		# Dump the entire graph and all subgraphs to dot text format.
-		def dump_graph(buffer, indent, options)
+		def dump_graph(buffer, indent = "", **options)
 			format = graph_format(options)
 			
 			buffer.puts "#{indent}#{format} #{dump_value(self.identifier)} {"

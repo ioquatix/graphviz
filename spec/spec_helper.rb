@@ -19,6 +19,8 @@ end
 require "bundler/setup"
 require "graphviz"
 
+Thread.abort_on_exception = true
+
 RSpec.configure do |config|
 	# Enable flags like --only-failures and --next-failure
 	config.example_status_persistence_file_path = ".rspec_status"

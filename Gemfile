@@ -5,5 +5,9 @@ gemspec
 
 group :development do
 	gem "guard-rspec"
-	gem "simplecov"
+end
+
+group :test do
+	gem 'simplecov'
+	gem 'coveralls', require: false
 end

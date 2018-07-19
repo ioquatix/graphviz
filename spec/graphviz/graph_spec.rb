@@ -20,13 +20,13 @@
 
 require 'graphviz'
 
-  SAMPLE_GRAPH_DOT = <<~EOF
-  digraph "G" {
+  SAMPLE_GRAPH_DOT = <<-EOF
+digraph "G" {
 	"Foo"[shape="box3d", color="red"];
 	"Bar";
 	"Foo" -> "Bar";
-  }
-  EOF
+}
+EOF
 
   describe Graphviz::Graph do
     it "should construct a simple graph" do

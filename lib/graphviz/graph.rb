@@ -50,7 +50,7 @@ module Graphviz
     end
 
 
-    # Finds all nodes with a specific name
+    # Finds all nodes with a given name
     #
     # @param [String] node_name the name to look for
     # @return [Array<Graphviz::Node>, nil] list of all found nodes or nil
@@ -58,6 +58,10 @@ module Graphviz
       @nodes.select{ |k, v| v.name == node_name}.values
     end
 
+    # Determines if a node with a given name exists in the graph
+    #
+    # @param [String] node_name the name to look for
+    # @return [Boolean] if node exists in graph
     def node_exists?(node_name)
       @nodes.select{ |k, v| v.name == node_name}.any?
     end

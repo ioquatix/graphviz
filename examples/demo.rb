@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require_relative 'lib/graphviz.rb'
+require_relative '../lib/graphviz.rb'
 
 # Hello
 #   |

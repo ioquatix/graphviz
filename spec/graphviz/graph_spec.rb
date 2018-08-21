@@ -20,52 +20,54 @@
 
 require 'graphviz'
 
-SAMPLE_GRAPH_DOT = <<-EOF
-digraph "G" {
-	"Foo"[shape="box3d", color="red"];
-	"Bar";
-	"Foo" -> "Bar";
-}
-EOF
+RSpec.describe Graphviz::Graph do
+	let(:sample_graph_dot) do
+		<<~EOF
+			digraph "G" {
+				"Foo"[shape="box3d", color="red"];
+				"Bar";
+				"Foo" -> "Bar";
+			}
+		EOF
+	end
+	
+	it "should construct a simple graph" do
+		foo = subject.add_node("Foo")
+		foo.add_node("Bar")
 
-	describe Graphviz::Graph do
-		it "should construct a simple graph" do
-			foo = subject.add_node("Foo")
-			foo.add_node("Bar")
+		foo.attributes[:shape] = 'box3d'
+		foo.attributes[:color] = 'red'
 
-			foo.attributes[:shape] = 'box3d'
-			foo.attributes[:color] = 'red'
+		expect(subject.to_dot).to be == sample_graph_dot
 
-			expect(subject.to_dot).to be == SAMPLE_GRAPH_DOT
+		# Process the graph to output:
+		Graphviz::output(subject, :path => "test.pdf")
 
-			# Process the graph to output:
-			Graphviz::output(subject, :path => "test.pdf")
-
-			expect(File.exist? "test.pdf").to be true
-		end
-
-		it "gets a node" do
-			foo = subject.add_node('Foo')
-			bar = subject.add_node('Bar')
-			bar.add_node('Baz')
-			expect(subject.get_node('Baz')).to be_an(Array)
-			expect(subject.get_node('Baz').size).to eq 1
-			expect(subject.get_node('Foo').first).to be_a(Graphviz::Node)
-			expect(subject.get_node('Nothing')).to be_an(Array)
-			expect(subject.get_node('Nothing').size).to eq 0
+		expect(File.exist? "test.pdf").to be true
 	end
 
-		it "checks if a node exists" do
-			foo = subject.add_node('Foo')
-			bar = subject.add_node('Bar')
-			bar.add_node('Baz')
-			expect(subject.node_exists?('Baz')).to be true
-			expect(subject.node_exists?('Nothing')).to be false
-		end
+	it "gets a node" do
+		foo = subject.add_node('Foo')
+		bar = subject.add_node('Bar')
+		bar.add_node('Baz')
+		expect(subject.get_node('Baz')).to be_an(Array)
+		expect(subject.get_node('Baz').size).to eq 1
+		expect(subject.get_node('Foo').first).to be_a(Graphviz::Node)
+		expect(subject.get_node('Nothing')).to be_an(Array)
+		expect(subject.get_node('Nothing').size).to eq 0
+end
 
-		it 'should raise an error the executable is installed' do
-			expect do
-				Graphviz.output(subject, :dot => 'foobarbaz')
-			end.to raise_error(Errno::ENOENT, 'No such file or directory - foobarbaz')
-		end
+	it "checks if a node exists" do
+		foo = subject.add_node('Foo')
+		bar = subject.add_node('Bar')
+		bar.add_node('Baz')
+		expect(subject.node_exists?('Baz')).to be true
+		expect(subject.node_exists?('Nothing')).to be false
+	end
+
+	it 'should raise an error the executable is installed' do
+		expect do
+			Graphviz.output(subject, :dot => 'foobarbaz')
+		end.to raise_error(Errno::ENOENT, 'No such file or directory - foobarbaz')
+	end
 end

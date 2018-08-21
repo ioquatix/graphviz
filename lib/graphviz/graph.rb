@@ -23,33 +23,44 @@ require 'stringio'
 require_relative 'node'
 
 module Graphviz
-  # Contains a set of nodes, edges and subgraphs.
-  class Graph < Node
-    # Initialize the graph with the specified unique name.
-    def initialize(name = 'G', parent = nil, **attributes)
-      super
-
-      @edges = []
-      @nodes = {}
-    end
-
-    # All edges in the graph
-    attr :edges
-
-    # @return [Array<Node>] All nodes in the graph.
-    attr :nodes
-
-    # @return [Hash] Any associated graphviz attributes.
-    attr_accessor :attributes
-
-    # @return [Node] Add a node to this graph.
-    def add_node(name = nil, **attributes)
-      name ||= "#{@name}N#{@nodes.count}"
-
-      Node.new(name, self, attributes)
-    end
-
-
+	# Contains a set of nodes, edges and subgraphs.
+	class Graph < Node
+		# Initialize the graph with the specified unique name.
+		def initialize(name = 'G', parent = nil, **attributes)
+			super
+			
+			@edges = []
+			@nodes = {}
+		end
+		
+		# All edges in the graph
+		attr :edges
+		
+		# @return [Array<Node>] All nodes in the graph.
+		attr :nodes
+		
+		# @return [Hash] Any associated graphviz attributes.
+		attr_accessor :attributes
+		
+		# @return [Node] Add a node to this graph.
+		def add_node(name = nil, **attributes)
+			name ||= "#{@name}N#{@nodes.count}"
+			
+			Node.new(name, self, attributes)
+		end
+		
+		# Add a subgraph with a given name and attributes.
+		# @return [Graph] the new graph.
+		def add_subgraph(name = nil, **attributes)
+			name ||= "#{@name}S#{@nodes.count}"
+			
+			subgraph = Graph.new(name, self, attributes)
+			
+			self << subgraph
+			
+			return subgraph
+		end
+		
     # Finds all nodes with a given name
     #
     # @param [String] node_name the name to look for
@@ -67,74 +78,62 @@ module Graphviz
     end
 
 
-    # Add a subgraph with a given name and attributes.
-    # @return [Graph] the new graph.
-    def add_subgraph(name = nil, **attributes)
-      name ||= "#{@name}S#{@nodes.count}"
-
-      subgraph = Graph.new(name, self, attributes)
-
-      self << subgraph
-
-      return subgraph
-    end
-
-    def << node
-      @nodes[node.name] = node
-
-      node.attach(self)
-    end
-
-    # @return [String] Output the graph using the dot format.
-    def to_dot(**options)
-      buffer = StringIO.new
-
-      dump_graph(buffer, **options)
-
-      return buffer.string
-    end
-
-    def graph_format(options)
-      if @graph
-        'subgraph'
-      else
-        options[:format] || 'digraph'
-      end
-    end
-
-    def identifier
-      if @attributes[:cluster]
-        "cluster_#{@name}"
-      else
-        super
-      end
-    end
-
-    def dump_edges(buffer, indent, **options)
-      @edges.each do |edge|
-        edge_attributes_text = dump_attributes(edge.attributes)
-
-        buffer.puts "#{indent}#{edge}#{edge_attributes_text};"
-      end
-    end
-
-    # Dump the entire graph and all subgraphs to dot text format.
-    def dump_graph(buffer, indent = "", **options)
-      format = graph_format(options)
-
-      buffer.puts "#{indent}#{format} #{dump_value(self.identifier)} {"
-
-      @attributes.each do |name, value|
-        buffer.puts "#{indent}\t#{name}=#{dump_value(value)};"
-      end
-
-      @nodes.each do |name, node|
-        node.dump_graph(buffer, indent + "\t", options)
-      end
-
-      dump_edges(buffer, indent + "\t", options)
-
-      buffer.puts "#{indent}}"
-    end
-  end
+		def << node
+			@nodes[node.name] = node
+			
+			node.attach(self)
+		end
+		
+		# @return [String] Output the graph using the dot format.
+		def to_dot(**options)
+			buffer = StringIO.new
+			
+			dump_graph(buffer, **options)
+			
+			return buffer.string
+		end
+		
+		def graph_format(options)
+			if @graph
+				'subgraph'
+			else
+				options[:format] || 'digraph'
+			end
+		end
+		
+		def identifier
+			if @attributes[:cluster]
+				"cluster_#{@name}"
+			else
+				super
+			end
+		end
+		
+		def dump_edges(buffer, indent, **options)
+			@edges.each do |edge|
+				edge_attributes_text = dump_attributes(edge.attributes)
+				
+				buffer.puts "#{indent}#{edge}#{edge_attributes_text};"
+			end
+		end
+		
+		# Dump the entire graph and all subgraphs to dot text format.
+		def dump_graph(buffer, indent = "", **options)
+			format = graph_format(options)
+			
+			buffer.puts "#{indent}#{format} #{dump_value(self.identifier)} {"
+			
+			@attributes.each do |name, value|
+				buffer.puts "#{indent}\t#{name}=#{dump_value(value)};"
+			end
+			
+			@nodes.each do |name, node|
+				node.dump_graph(buffer, indent + "\t", options)
+			end
+			
+			dump_edges(buffer, indent + "\t", options)
+			
+			buffer.puts "#{indent}}"
+		end
+	end
 end

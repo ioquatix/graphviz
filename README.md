@@ -2,8 +2,7 @@
 
 Graphviz is a graph visualisation system. This gem is a lightweight interface for generating graphs with Graphviz.
 
-[![Build Status](https://travis-ci.org/ioquatix/graphviz.svg)](https://travis-ci.org/ioquatix/graphviz)
-[![Coverage Status](https://coveralls.io/repos/ioquatix/graphviz/badge.svg)](https://coveralls.io/r/ioquatix/graphviz)
+[![Development Status](https://github.com/ioquatix/graphviz/workflows/Development/badge.svg)](https://github.com/ioquatix/graphviz/actions?workflow=Development)
 
 ## Installation
 

@@ -1,27 +1,29 @@
 
-require_relative 'lib/graphviz/version'
+require_relative "lib/graphviz/version"
 
 Gem::Specification.new do |spec|
-	spec.name          = "graphviz"
-	spec.version       = Graphviz::VERSION
-	spec.authors       = ["Samuel Williams"]
-	spec.email         = ["samuel.williams@oriontransfer.co.nz"]
-	spec.description   = <<-EOF
-		Graphviz is a graph visualisation system. This gem is a lightweight interface for generating graphs with Graphviz.
-	EOF
-	spec.summary       = "A lightweight interface for generating graphs with Graphviz."
-	spec.homepage      = "https://github.com/ioquatix/graphviz"
-	spec.license       = "MIT"
+	spec.name = "graphviz"
+	spec.version = Graphviz::VERSION
+	
+	spec.summary = "A lightweight interface for generating graphs with Graphviz."
+	spec.authors = ["Samuel Williams"]
+	spec.license = "MIT"
+	
+	spec.homepage = "https://github.com/ioquatix/graphviz"
+	
+	spec.metadata = {
+		"funding_uri" => "https://github.com/sponsors/ioquatix/",
+	}
+	
+	spec.files = Dir.glob('{lib}/**/*', File::FNM_DOTMATCH, base: __dir__)
 
-	spec.files         = `git ls-files`.split($/)
-	spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-	spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-	spec.require_paths = ["lib"]
-
-	spec.add_dependency 'process-pipeline'
-
-	spec.add_development_dependency "yard"
+	spec.required_ruby_version = ">= 0"
+	
+	spec.add_dependency "process-pipeline"
+	
+	spec.add_development_dependency "bake-bundler"
+	spec.add_development_dependency "bake-modernize"
 	spec.add_development_dependency "bundler"
+	spec.add_development_dependency "covered"
 	spec.add_development_dependency "rspec", "~> 3.6"
-	spec.add_development_dependency "rake"
 end

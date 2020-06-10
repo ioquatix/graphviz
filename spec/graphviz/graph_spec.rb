@@ -47,7 +47,7 @@ RSpec.describe Graphviz::Graph do
 	end
 
 	it "gets a node" do
-		foo = subject.add_node('Foo')
+		subject.add_node('Foo')
 		bar = subject.add_node('Bar')
 		bar.add_node('Baz')
 		expect(subject.get_node('Baz')).to be_an(Array)
@@ -58,7 +58,7 @@ RSpec.describe Graphviz::Graph do
 end
 
 	it "checks if a node exists" do
-		foo = subject.add_node('Foo')
+		subject.add_node('Foo')
 		bar = subject.add_node('Bar')
 		bar.add_node('Baz')
 		expect(subject.node_exists?('Baz')).to be true

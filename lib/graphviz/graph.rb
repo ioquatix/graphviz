@@ -46,7 +46,7 @@ module Graphviz
 		def add_node(name = nil, **attributes)
 			name ||= "#{@name}N#{@nodes.count}"
 			
-			Node.new(name, self, attributes)
+			Node.new(name, self, **attributes)
 		end
 		
 		# Add a subgraph with a given name and attributes.
@@ -131,7 +131,7 @@ module Graphviz
 				node.dump_graph(buffer, indent + "\t", options)
 			end
 			
-			dump_edges(buffer, indent + "\t", options)
+			dump_edges(buffer, indent + "\t", **options)
 			
 			buffer.puts "#{indent}}"
 		end

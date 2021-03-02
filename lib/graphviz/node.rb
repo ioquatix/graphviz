@@ -79,7 +79,7 @@ module Graphviz
 			@name
 		end
 		
-		def dump_graph(buffer, indent, options)
+		def dump_graph(buffer, indent, **options)
 			node_attributes_text = dump_attributes(@attributes)
 			node_name = dump_value(self.identifier)
 			

@@ -127,8 +127,8 @@ module Graphviz
 				buffer.puts "#{indent}\t#{name}=#{dump_value(value)};"
 			end
 			
-			@nodes.each do |name, node|
-				node.dump_graph(buffer, indent + "\t", options)
+			@nodes.each do |_name, node|
+				node.dump_graph(buffer, indent + "\t", **options)
 			end
 			
 			dump_edges(buffer, indent + "\t", **options)

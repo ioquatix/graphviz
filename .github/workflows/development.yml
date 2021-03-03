@@ -17,6 +17,7 @@ jobs:
           - 2.5
           - 2.6
           - 2.7
+          - 3.0
         
         experimental: [false]
         env: [""]
@@ -37,7 +38,8 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{matrix.ruby}}
-      
+        bundler-cache: true
+    
     - name: Installing packages (ubuntu)
       if: matrix.os == 'ubuntu'
       run: sudo apt-get install graphviz
@@ -45,9 +47,6 @@ jobs:
     - name: Installing packages (macos)
       if: matrix.os == 'macos'
       run: brew install graphviz
-    
-    - name: Install dependencies
-      run: ${{matrix.env}} bundle install
     
     - name: Run tests
       timeout-minutes: 5

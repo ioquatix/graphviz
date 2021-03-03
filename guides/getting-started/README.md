@@ -25,7 +25,7 @@ foo.add_node("Bar")
 foo.attributes[:shape] = 'box3d'
 foo.attributes[:color] = 'red'
 
-# Dup the dot data:
+# Dump the dot data:
 # puts graph.to_dot
 
 # Process the graph to output:

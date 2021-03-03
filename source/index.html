@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+			<title>Source</title>
+		
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		
+		<link rel="icon" type="image/png" href="../_static/icon.png"/>
+		<link rel="stylesheet" href="../_static/site.css" type="text/css" media="screen"/>
+		
+		<script src="../_components/jquery/jquery.min.js"></script>
+		<script src="../_components/jquery-syntax/jquery.syntax.min.js"></script>
+		
+		<script src="../_static/links.js"></script>
+		
+		<script type="text/javascript">
+		//<![CDATA[
+			jQuery(function($) {
+				$.syntax();
+			});
+		//]]>
+		</script>
+	</head>
+
+	<body>
+		<header> › <a class="link" href="../index.html">Project</a> › <a class="link" href="index.html">Source</a></header>
+		
+		<main>
+			
+	<h1>Source</h1>
+	
+	<ul class="index"><li>
+					<a href="Graphviz/index.html"><code class="language-ruby">module Graphviz</code></a>
+					
+					
+					<ul class="index"><li>
+					<a href="Graphviz/Graph/index.html"><code class="language-ruby">class Graph &lt; Node</code></a>
+					
+						<p>Contains a set of nodes, edges and subgraphs.</p>
+
+					
+					<ul class="index"><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23initialize"><code class="language-ruby">def initialize(name = 'G', parent = nil, **attributes)</code></a>
+					
+						<p>Initialize the graph with the specified unique name.</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23edges"><code class="language-ruby">attr :edges</code></a>
+					
+						<p>All edges in the graph</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23nodes"><code class="language-ruby">attr :nodes</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23attributes"><code class="language-ruby">attr_accessor :attributes</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23add_node"><code class="language-ruby">def add_node(name = nil, **attributes)</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23add_subgraph"><code class="language-ruby">def add_subgraph(name = nil, **attributes)</code></a>
+					
+						<p>Add a subgraph with a given name and attributes.</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23get_node"><code class="language-ruby">def get_node(node_name)</code></a>
+					
+						<p>Finds all nodes with a given name</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23node_exists%3F"><code class="language-ruby">def node_exists?(node_name)</code></a>
+					
+						<p>Determines if a node with a given name exists in the graph</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23to_dot"><code class="language-ruby">def to_dot(**options)</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Graph/index.html#Graphviz%3A%3AGraph%23dump_graph"><code class="language-ruby">def dump_graph(buffer, indent = &quot;&quot;, **options)</code></a>
+					
+						<p>Dump the entire graph and all subgraphs to dot text format.</p>
+
+					
+									</li></ul>				</li><li>
+					<a href="Graphviz/Edge/index.html"><code class="language-ruby">class Edge</code></a>
+					
+						<p>Represents a visual edge between two nodes.</p>
+
+					
+					<ul class="index"><li>
+					<a href="Graphviz/Edge/index.html#Graphviz%3A%3AEdge%23initialize"><code class="language-ruby">def initialize(graph, source, destination, attributes = {})</code></a>
+					
+						<p>Initialize the edge in the given graph, with a source and destination node.</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Edge/index.html#Graphviz%3A%3AEdge%23source"><code class="language-ruby">attr :source</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Edge/index.html#Graphviz%3A%3AEdge%23destination"><code class="language-ruby">attr :destination</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Edge/index.html#Graphviz%3A%3AEdge%23attributes"><code class="language-ruby">attr_accessor :attributes</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Edge/index.html#Graphviz%3A%3AEdge%23to_s"><code class="language-ruby">def to_s</code></a>
+					
+					
+									</li></ul>				</li><li>
+					<a href="Graphviz/Node/index.html"><code class="language-ruby">class Node</code></a>
+					
+						<p>Represents a visual node in the graph, which can be connected to other nodes.</p>
+
+					
+					<ul class="index"><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23initialize"><code class="language-ruby">def initialize(name, graph = nil, **attributes)</code></a>
+					
+						<p>Initialize the node in the graph with the unique name.</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23attach"><code class="language-ruby">def attach(parent)</code></a>
+					
+						<p>Attach this node to the given graph:</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23name"><code class="language-ruby">attr :name</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23connections"><code class="language-ruby">attr :connections</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23attributes"><code class="language-ruby">attr_accessor :attributes</code></a>
+					
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23connect"><code class="language-ruby">def connect(destination, attributes = {})</code></a>
+					
+						<p>Create an edge between this node and the destination with the specified options.</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23connected%3F"><code class="language-ruby">def connected?(node)</code></a>
+					
+						<p>Calculate if this node is connected to another. +O(N)+ search required.</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23add_node"><code class="language-ruby">def add_node(name = nil, **attributes)</code></a>
+					
+						<p>Add a node and #connect to it.</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23dump_value"><code class="language-ruby">def dump_value(value)</code></a>
+					
+						<p>Dump the value to dot text format.</p>
+
+					
+									</li><li>
+					<a href="Graphviz/Node/index.html#Graphviz%3A%3ANode%23dump_attributes"><code class="language-ruby">def dump_attributes(attributes)</code></a>
+					
+						<p>Dump the attributes to dot text format.</p>
+
+					
+									</li></ul>				</li><li>
+					<a href="Graphviz/index.html#Graphviz.output"><code class="language-ruby">def self.output(graph, path: nil, format: 'pdf', dot: 'dot')</code></a>
+					
+						<p>Outputs the graph using the +dot+ executable.</p>
+
+					
+									</li></ul>				</li></ul>
+				
+			<footer>Documentation generated by <a href="https://github.com/socketry/utopia-project">Utopia::Project</a>.</footer>
+		</main>
+	</body>
+</html>

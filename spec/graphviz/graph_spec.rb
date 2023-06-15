@@ -55,7 +55,7 @@ RSpec.describe Graphviz::Graph do
 		expect(subject.get_node('Foo').first).to be_a(Graphviz::Node)
 		expect(subject.get_node('Nothing')).to be_an(Array)
 		expect(subject.get_node('Nothing').size).to eq 0
-end
+	end
 
 	it "checks if a node exists" do
 		subject.add_node('Foo')
@@ -69,5 +69,11 @@ end
 		expect do
 			Graphviz.output(subject, :dot => 'foobarbaz')
 		end.to raise_error(Errno::ENOENT, 'No such file or directory - foobarbaz')
+	end
+
+	describe "#add_subgraph" do
+		it "does not crash" do
+			expect { subject.add_subgraph }.to_not raise_error
+		end
 	end
 end

@@ -54,7 +54,7 @@ module Graphviz
 		def add_subgraph(name = nil, **attributes)
 			name ||= "#{@name}S#{@nodes.count}"
 			
-			subgraph = Graph.new(name, self, attributes)
+			subgraph = Graph.new(name, self, **attributes)
 			
 			self << subgraph
 			
